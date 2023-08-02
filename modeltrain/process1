@@ -1,0 +1,34 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+files = ['禾_D_海宁被面市场局_2F综合机房', 
+         "台_C_温岭三星大楼局_5F数据机房2",
+         "婺_A_云计算中心一号楼局_2F2-1电力电池室",
+         "湖_D_德清城关母局_Z01机房",
+         "湖_B_吴兴红旗母局_2FZ11机房"]
+path = files[4]
+data = pd.read_csv('../data2/202306120947/' + path  + '.csv')
+idx = data.columns
+i = 0
+data['temp'] = data['env_avg']
+# for a in idx:
+#     if '_s' in a:
+#         data['label'] = data[a]
+#     if '_r' in a:
+#         data['return_t'] = data[a]
+env_avg = data["env_avg"].to_list()
+# env_avg = data[idx[-2]].to_list()
+rel = []
+nans = np.isnan(env_avg)
+env_avg = np.delete(env_avg, np.where(nans))
+env_avg -= np.mean(env_avg)
+env_avg = env_avg.tolist()
+R0 = np.mean(np.array(env_avg)**2)
+for i in range(500):
+    x = np.array(env_avg + [0]*i) * np.array([0]*i + env_avg)
+    rel.append(np.sum(x)/np.sum(x!=0)/R0)
+# print(rel)
+plt.plot(rel)
+# plt.savefig('{s}'.format(s=path))
+plt.savefig('rel.png')
+    
